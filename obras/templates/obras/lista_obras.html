@@ -1,0 +1,31 @@
+<!-- obras/templates/obras/lista_obras.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Acompanhamento de Obras{% endblock title %}
+
+{% block content %}
+    <h1>Acompanhamento de Obras</h1>
+    
+    {% for obra in obras %}
+        <div class="obra-card" style="border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 20px; background-color: #f9f9f9;">
+            <h2>Imóvel: <a href="{% url 'imoveis:detalhe_imovel' obra.imovel.id %}" style="color: inherit; text-decoration: none;">{{ obra.imovel.titulo }}</a></h2>
+            <p><strong>Previsão de Entrega:</strong> {{ obra.previsao_entrega|date:"d/m/Y" }}</p>
+            <p><strong>Status Atual:</strong> {{ obra.status_atual }}</p>
+
+            <h4>Histórico de Atualizações:</h4>
+            <div style="margin-left: 20px; border-left: 3px solid #e0e0e0; padding-left: 20px; margin-top: 1em;">
+                {% for status in obra.historico_status.all %}
+                    <div style="margin-bottom: 15px;">
+                        <strong>{{ status.data_atualizacao|date:"d/m/Y" }} - {{ status.fase }} ({{ status.percentual_concluido }}%)</strong>
+                        <p style="margin: 5px 0 0; color: #555;">{{ status.descricao|linebreaksbr }}</p>
+                    </div>
+                {% empty %}
+                    <p>Nenhuma atualização de status registrada para esta obra.</p>
+                {% endfor %}
+            </div>
+        </div>
+    {% empty %}
+        <p>Nenhuma obra em andamento para acompanhar no momento.</p>
+    {% endfor %}
+{% endblock content %}

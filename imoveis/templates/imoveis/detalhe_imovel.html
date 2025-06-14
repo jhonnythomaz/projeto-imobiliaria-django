@@ -1,0 +1,59 @@
+<!-- imoveis/templates/imoveis/detalhe_imovel.html - ESTRUTURA CORRETA -->
+
+{% extends "base.html" %}
+
+<!-- Bloco 'title' é aberto e fechado -->
+{% block title %}{{ imovel.titulo }}{% endblock title %}
+
+<!-- Bloco 'content' é aberto... -->
+{% block content %}
+
+<h1>{{ imovel.titulo }}</h1>
+
+{% if user == imovel.corretor_responsavel %}
+<p>
+  <a
+    href="{% url 'imoveis:editar_imovel' imovel.id %}"
+    style="
+      font-weight: bold;
+      color: green;
+      background-color: #e8f5e9;
+      padding: 8px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+    "
+  >
+    ✎ Editar este Imóvel
+  </a>
+</p>
+{% endif %}
+
+<p><strong>Localização:</strong> {{ imovel.localizacao }}</p>
+<p><strong>Tipo:</strong> {{ imovel.get_tipo_imovel_display }}</p>
+<p><strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}</p>
+<p><strong>Quartos:</strong> {{ imovel.numero_quartos }}</p>
+<hr />
+<h3>Descrição</h3>
+<p>{{ imovel.descricao|linebreaks }}</p>
+
+<h3>Fotos</h3>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px">
+  {% for foto in imovel.fotos.all %}
+  <img
+    src="{{ foto.imagem.url }}"
+    alt="Foto do imóvel {{ imovel.titulo }}"
+    style="max-width: 250px; border-radius: 5px"
+  />
+  {% empty %}
+  <p>Este imóvel ainda não possui fotos.</p>
+  {% endfor %}
+</div>
+
+<a
+  href="{% url 'imoveis:lista_imoveis' %}"
+  style="display: block; margin-top: 2em"
+  >← Voltar para a lista de imóveis</a
+>
+
+<!-- ...e o bloco 'content' é fechado aqui no final -->
+{% endblock content %}

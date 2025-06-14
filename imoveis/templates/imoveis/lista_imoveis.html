@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Imóveis Disponíveis{% endblock title %}
+
+{% block content %}
+    <h1>Nossos Imóveis para Investimento</h1>
+
+    <form method="get" action="{% url 'imoveis:lista_imoveis' %}" style="margin-bottom: 2em; padding: 1em; background: #f0f0f0; border-radius: 5px;">
+        <div style="display: flex; gap: 1em; align-items: flex-end;">
+            <div>
+                <label for="id_q_localizacao">Localização:</label><br>
+                <input type="text" name="q_localizacao" id="id_q_localizacao" value="{{ filtro_localizacao }}">
+            </div>
+            <div>
+                <label for="id_q_tipo">Tipo de Imóvel:</label><br>
+                <select name="q_tipo" id="id_q_tipo">
+                    <option value="">Todos</option>
+                    {% for valor, nome in tipos_imovel %}
+                        <option value="{{ valor }}" {% if valor == filtro_tipo %}selected{% endif %}>{{ nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <button type="submit">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    {% if user.is_authenticated and user.is_corretor %}
+        <p><a href="{% url 'imoveis:criar_imovel' %}">+ Adicionar Novo Imóvel</a></p>
+    {% endif %}
+
+    {% for imovel in imoveis %}
+        <div class="imovel-card" style="border: 1px solid #ccc; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <h2>
+                <a href="{% url 'imoveis:detalhe_imovel' imovel.id %}" style="text-decoration: none; color: #333;">{{ imovel.titulo }}</a>
+            </h2>
+            <p><strong>Localização:</strong> {{ imovel.localizacao }}</p>
+            <p><strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}</p>
+            <p><strong>Quartos:</strong> {{ imovel.numero_quartos }}</p>
+            <p>{{ imovel.descricao|truncatewords:30 }}</p>
+        </div>
+    {% empty %}
+        <p>Nenhum imóvel encontrado com os filtros selecionados.</p>
+    {% endfor %}
+
+{% endblock content %}

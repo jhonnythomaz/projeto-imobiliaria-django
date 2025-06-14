@@ -1,0 +1,46 @@
+<!-- imoveis/templates/imoveis/editar_imovel.html - SINTAXE CORRETA -->
+
+{% extends "base.html" %}
+
+{% block title %}
+    Editar: {{ imovel.titulo }}
+{% endblock title %}
+
+{% block content %}
+    <h1>Editar Imóvel</h1>
+    <h2 style="color: #555; border-bottom: 1px solid #ccc; padding-bottom: 0.5em;">
+        {{ imovel.titulo }}
+    </h2>
+
+    <hr>
+    
+    <h3>Dados do Imóvel</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form_imovel.as_p }}
+        <button type="submit" name="salvar_dados_imovel">Salvar Alterações nos Dados</button>
+    </form>
+
+    <hr style="margin-top: 2em; margin-bottom: 2em;">
+    
+    <h3>Fotos do Imóvel</h3>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 1em;">
+        {% for foto in imovel.fotos.all %}
+            <img src="{{ foto.imagem.url }}" alt="Foto do imóvel" width="150" style="border-radius: 5px;">
+        {% empty %}
+            <p>Nenhuma foto cadastrada.</p>
+        {% endfor %}
+    </div>
+    
+    <h4 style="margin-top: 1.5em;">Adicionar Nova Foto</h4>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form_foto.as_p }}
+        <button type="submit" name="adicionar_foto">Adicionar Foto</button>
+    </form>
+    
+    <p style="margin-top: 2em;">
+        <a href="{% url 'imoveis:detalhe_imovel' imovel.id %}">← Cancelar e voltar para os detalhes</a>
+    </p>
+
+{% endblock content %}

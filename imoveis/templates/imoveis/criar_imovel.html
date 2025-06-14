@@ -1,0 +1,17 @@
+<!-- imoveis/templates/imoveis/criar_imovel.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Adicionar Novo Imóvel{% endblock title %}
+
+{% block content %}
+    <h1>Adicionar Novo Imóvel</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar Imóvel</button>
+    </form>
+    <p style="margin-top: 2em;">
+        <a href="{% url 'imoveis:lista_imoveis' %}">← Voltar para a lista</a>
+    </p>
+{% endblock content %}
