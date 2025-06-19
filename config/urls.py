@@ -1,25 +1,26 @@
-# config/urls.py
+# config/urls.py - VERSÃO ATUALIZADA
 
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-# Importe as views de autenticação do Django
-from django.contrib.auth import views as auth_views
+# --- 1. IMPORTAMOS A NOSSA NOVA VIEW DE CADASTRO ---
+from usuarios.views import SignUpView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('imoveis/', include('imoveis.urls')),
-    
-    # --- Nossas Novas URLs de Autenticação ---
-    # Usamos a LoginView pronta do Django, dizendo a ela qual template usar.
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    
-    # A LogoutView é ainda mais simples.
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-
     path('obras/', include('obras.urls')),
+    
+    # --- 2. ADICIONAMOS A NOVA URL DE CADASTRO ---
+    # Ela vem ANTES do include de autenticação padrão.
+    path('contas/signup/', SignUpView.as_view(), name='signup'),
+    
+    # URLs de Autenticação Padrão (Login, Logout, Recuperação de Senha)
+    path('contas/', include('django.contrib.auth.urls')),
+    
+    # URL Principal do Site
+    path('', include('imoveis.urls')),
 ]
 
 if settings.DEBUG:

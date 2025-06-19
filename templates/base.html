@@ -1,102 +1,106 @@
-<!-- templates/base.html - VERSÃO FINAL COM MENSAGENS -->
+<!-- templates/base.html - VERSÃO FINAL COM BOOTSTRAP E URLS DE AUTENTICAÇÃO -->
 
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Imobiliária Django{% endblock title %}</title>
+    
+    <!-- Link para o CSS do Bootstrap via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
     <style>
-      body {
-        font-family: sans-serif;
-        margin: 0;
-        background-color: #f4f4f4;
-      }
-      .navbar {
-        background-color: #333;
-        color: white;
-        padding: 1em;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .navbar a {
-        color: white;
-        text-decoration: none;
-        margin-left: 15px;
-      }
-      .navbar .logo {
-        font-weight: bold;
-        font-size: 1.5em;
-      }
-      .container {
-        max-width: 960px;
-        margin: 2em auto;
-        padding: 2em;
-        background-color: white;
-        border-radius: 8px;
-      }
-      .link-button {
-        background: none;
-        border: none;
-        padding: 0;
-        color: white; /* Cor do botão de sair */
-        text-decoration: none;
-        cursor: pointer;
-        font-family: inherit;
-        font-size: inherit;
-      }
-      /* Estilos para as mensagens de feedback */
-      .alert {
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 1px solid transparent;
-        border-radius: 0.25rem;
-      }
-      .alert-success {
-        color: #0f5132;
-        background-color: #d1e7dd;
-        border-color: #badbcc;
-      }
-      .alert-error {
-        color: #842029;
-        background-color: #f8d7da;
-        border-color: #f5c2c7;
-      }
+        /* Estilos personalizados para complementar o Bootstrap */
+        body { 
+            background-color: #f8f9fa; /* Um cinza claro do Bootstrap */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-container {
+            flex: 1;
+        }
+        .footer {
+            background-color: #343a40; /* bg-dark do Bootstrap */
+            color: white;
+            padding: 1.5em 0;
+            text-align: center;
+            margin-top: auto;
+        }
     </style>
+
     {% block styles %}{% endblock styles %}
-  </head>
-  <body>
-    <nav class="navbar">
-      <a href="{% url 'imoveis:lista_imoveis' %}" class="logo"
-        >Imobiliária Django</a
-      >
-      <div>
-        {% if user.is_authenticated %}
-        <a href="{% url 'obras:lista_obras' %}">Acompanhar Obras</a>
-        <span>Olá, {{ user.email }}</span>
-        <form action="{% url 'logout' %}" method="post" style="display: inline">
-          {% csrf_token %}
-          <button type="submit" class="link-button">Sair</button>
-        </form>
-        {% else %}
-        <a href="{% url 'login' %}">Login</a>
-        {% endif %}
-      </div>
+</head>
+<body>
+    
+    <!-- Barra de Navegação usando classes do Bootstrap -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <!-- O link do logo agora aponta para a lista de imóveis, nossa página principal -->
+            <a class="navbar-brand" href="{% url 'imoveis:lista_imoveis' %}">Imobiliária Django</a>
+            
+            <!-- Botão para menu responsivo em telas pequenas -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Links do menu principal à esquerda -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'imoveis:lista_imoveis' %}">Ver Imóveis</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'obras:lista_obras' %}">Acompanhar Obras</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <!-- Links do usuário à direita -->
+                <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                        <span class="navbar-text me-3">
+                            Olá, {{ user.email }}
+                        </span>
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">Sair</button>
+                        </form>
+                    {% else %}
+                        <a class="btn btn-outline-light" href="{% url 'login' %}">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </nav>
 
-    <main class="container">
-      <!-- ===================================== -->
-      <!--  AQUI ESTÁ O BLOCO DAS MENSAGENS      -->
-      <!-- ===================================== -->
-      {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-      {% endif %} {% block content %}
-      <p>Conteúdo padrão.</p>
-      {% endblock content %}
+    <!-- Container Principal do Bootstrap -->
+    <main class="container main-container">
+        <!-- Bloco de Mensagens com classes do Bootstrap -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+            <h2>Bem-vindo à Imobiliária Django!</h2>
+            <p>Navegue pelos links acima para encontrar o imóvel dos seus sonhos.</p>
+        {% endblock content %}
     </main>
-  </body>
+
+    <footer class="footer">
+        <div class="container">
+            <span>© {% now "Y" %} Imobiliária Django. Todos os direitos reservados.</span>
+        </div>
+    </footer>
+
+    <!-- Link para o JavaScript do Bootstrap via CDN (necessário para componentes como o menu responsivo e alertas) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
 </html>

@@ -1,59 +1,74 @@
-<!-- imoveis/templates/imoveis/detalhe_imovel.html - ESTRUTURA CORRETA -->
-
 {% extends "base.html" %}
 
-<!-- Bloco 'title' é aberto e fechado -->
 {% block title %}{{ imovel.titulo }}{% endblock title %}
 
-<!-- Bloco 'content' é aberto... -->
 {% block content %}
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="mb-3">{{ imovel.titulo }}</h1>
 
-<h1>{{ imovel.titulo }}</h1>
+            {% if user == imovel.corretor_responsavel %}
+                <p><a href="{% url 'imoveis:editar_imovel' imovel.id %}" class="btn btn-success mb-3">✎ Editar este Imóvel</a></p>
+            {% endif %}
 
-{% if user == imovel.corretor_responsavel %}
-<p>
-  <a
-    href="{% url 'imoveis:editar_imovel' imovel.id %}"
-    style="
-      font-weight: bold;
-      color: green;
-      background-color: #e8f5e9;
-      padding: 8px 12px;
-      border-radius: 5px;
-      text-decoration: none;
-    "
-  >
-    ✎ Editar este Imóvel
-  </a>
-</p>
-{% endif %}
+            {% if imovel.fotos.all %}
+                <div id="imovelCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner" style="border-radius: 8px;">
+                        {% for foto in imovel.fotos.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ foto.imagem.url }}" class="d-block w-100" alt="Foto do imóvel {{ forloop.counter }}" style="height: 500px; object-fit: cover;">
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#imovelCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#imovelCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            {% else %}
+                <div class="alert alert-info">Este imóvel ainda não possui fotos.</div>
+            {% endif %}
 
-<p><strong>Localização:</strong> {{ imovel.localizacao }}</p>
-<p><strong>Tipo:</strong> {{ imovel.get_tipo_imovel_display }}</p>
-<p><strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}</p>
-<p><strong>Quartos:</strong> {{ imovel.numero_quartos }}</p>
-<hr />
-<h3>Descrição</h3>
-<p>{{ imovel.descricao|linebreaks }}</p>
+            <div class="mt-4">
+                <h3>Descrição</h3>
+                <p>{{ imovel.descricao|linebreaks }}</p>
+            </div>
+        </div>
 
-<h3>Fotos</h3>
-<div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px">
-  {% for foto in imovel.fotos.all %}
-  <img
-    src="{{ foto.imagem.url }}"
-    alt="Foto do imóvel {{ imovel.titulo }}"
-    style="max-width: 250px; border-radius: 5px"
-  />
-  {% empty %}
-  <p>Este imóvel ainda não possui fotos.</p>
-  {% endfor %}
-</div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Detalhes do Imóvel</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Preço:</strong> R$ {{ imovel.preco|floatformat:2 }}</li>
+                        <li class="list-group-item"><strong>Tipo:</strong> {{ imovel.get_tipo_imovel_display }}</li>
+                        <li class="list-group-item"><strong>Localização:</strong> {{ imovel.localizacao }}</li>
+                        {% if imovel.tipo_imovel != 'TERRENO' %}
+                            <li class="list-group-item"><strong>Quartos:</strong> {{ imovel.numero_quartos }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
 
-<a
-  href="{% url 'imoveis:lista_imoveis' %}"
-  style="display: block; margin-top: 2em"
-  >← Voltar para a lista de imóveis</a
->
-
-<!-- ...e o bloco 'content' é fechado aqui no final -->
+            {% if imovel.corretor_responsavel %}
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Corretor Responsável</h5>
+                    <p class="card-text"><strong>Nome:</strong> {{ imovel.corretor_responsavel.username }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ imovel.corretor_responsavel.email }}</p>
+                    <p class="card-text"><strong>Telefone:</strong> {{ imovel.corretor_responsavel.telefone }}</p>
+                    <a href="#" class="btn btn-primary">Entrar em Contato</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'imoveis:lista_imoveis' %}">← Voltar para a lista de imóveis</a>
+    </div>
 {% endblock content %}

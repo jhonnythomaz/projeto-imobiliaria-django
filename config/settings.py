@@ -97,6 +97,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Configuração de Autenticação e Redirecionamento
-LOGIN_REDIRECT_URL = '/imoveis/'
-LOGOUT_REDIRECT_URL = '/imoveis/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
+
+# Configuração de E-mail para Desenvolvimento
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
